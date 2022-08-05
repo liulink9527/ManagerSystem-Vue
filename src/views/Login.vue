@@ -47,15 +47,15 @@ export default {
             // 登录校验
             this.$refs["userForm"].validate(valid => {
                 if (valid) {
-                    this.request.post("/user/login", this.user).then(response => {
-                        if (!response) {
-                            this.$message.error("密码错误");
+                    this.request.post("/user/login", this.user).then(res => {
+                        if (res.code !== "200") {
+                            this.$message.error(res.message);
                         } else {
+                            localStorage.setItem("user", JSON.stringify(res.data)); //存储用户信息到浏览器中
                             this.$router.push("/");
                         }
                     });
                 } else {
-                    console.log("error submit!!");
                     return false;
                 }
             });
