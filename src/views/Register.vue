@@ -9,18 +9,15 @@
             <button type="submit" @click="login">登录</button>
         </form> -->
         <el-form :model="user" ref="userForm" :rules="rules" class="login-form">
-            <div style="height: 50px; text-align: center">
-                <!--            图标-->
-                <img src="../assets/logo.png" style="width: 35px; margin-right: 3px" />
-            </div>
+            <h2 style="height: 50px">注册</h2>
             <el-form-item prop="username">
                 <el-input size="medium" v-model="user.username" placeholder="用户名"></el-input>
             </el-form-item>
             <el-form-item prop="password">
                 <el-input size="medium" v-model="user.password" show-password placeholder="密码"></el-input>
             </el-form-item>
-            <el-button type="submit" @click="login">登录</el-button>
-            <el-button type="submit" @click="toRegister">注册</el-button>
+            <el-button @click="back">返回登陆</el-button>
+            <el-button type="submit" @click="register">确认注册</el-button>
         </el-form>
     </div>
 </template>
@@ -44,25 +41,25 @@ export default {
         };
     },
     methods: {
-        login() {
-            // 登录校验
+        back() {
+            this.$router.push("/login");
+        },
+        register() {
+            // 注册验证
             this.$refs["userForm"].validate(valid => {
                 if (valid) {
-                    this.request.post("/user/login", this.user).then(res => {
+                    this.request.post("/user/register", this.user).then(res => {
                         if (res.code !== "200") {
                             this.$message.error(res.message);
                         } else {
-                            localStorage.setItem("user", JSON.stringify(res.data)); //存储用户信息到浏览器中
-                            this.$router.push("/");
+                            this.$message.success("注册成功");
+                            this.$router.push("/login");
                         }
                     });
                 } else {
                     return false;
                 }
             });
-        },
-        toRegister() {
-            this.$router.push("/register");
         },
     },
 };
