@@ -8,13 +8,13 @@
         </div>
         <el-menu-item index="/home">
             <template slot="title">
-                <i class="el-icon-location"></i>
+                <i class="el-icon-s-home"></i>
                 <span slot="title">主页</span>
             </template>
         </el-menu-item>
         <el-menu-item index="/content">
             <template slot="title">
-                <i class="el-icon-location"></i>
+                <i class="el-icon-user-solid"></i>
                 <span slot="title">用户管理</span>
             </template>
         </el-menu-item>
