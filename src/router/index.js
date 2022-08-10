@@ -20,6 +20,16 @@ const routes = [
                 name: "用户管理",
                 component: Content,
             },
+            {
+                path: "/personInfo",
+                name: "个人信息",
+                component: () => import("../views/PersonInfo.vue"),
+            },
+            {
+                path: "/file",
+                name: "文件管理",
+                component: () => import("../views/File.vue"),
+            },
         ],
     },
     {
@@ -39,8 +49,9 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    localStorage.setItem("currentPathName", to.name);
-    store.commit("setPath");
+    let user = localStorage.getItem("user") ? JSON.stringify(localStorage.getItem("user")) : {};
+    if (to.path === "/login") return next();
+    if (!user) return next("/login");
     next();
 });
 

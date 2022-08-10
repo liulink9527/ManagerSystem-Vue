@@ -16,7 +16,9 @@
             <span>{{ user.nickname }}</span>
             <i class="el-icon-arrow-down" style="margin-left: 5px"></i>
             <el-dropdown-menu slot="dropdown" style="width: 100px; text-align: center">
-                <el-dropdown-item style="font-size: 14px; padding: 5px 0">个人信息</el-dropdown-item>
+                <el-dropdown-item style="font-size: 14px; padding: 5px 0">
+                    <span @click="PersonInfo">个人信息</span>
+                </el-dropdown-item>
                 <el-dropdown-item style="font-size: 14px; padding: 5px 0">
                     <span @click="exit">退出</span>
                 </el-dropdown-item>
@@ -36,16 +38,6 @@ export default {
     props: {
         collapseBtnClass: String,
     },
-    computed: {
-        currentPathName() {
-            return this.$store.state.currentPathName;
-        },
-    },
-    watch: {
-        currentPathName(newVal, oldVal) {
-            console.log(newVal);
-        },
-    },
     methods: {
         collapse() {
             this.$emit("collaspse");
@@ -54,6 +46,18 @@ export default {
             this.$router.push("/login");
             localStorage.removeItem("user");
         },
+        PersonInfo() {
+            this.$router.push("/personInfo");
+        },
+        refreshUser(user) {
+            this.user = user;
+        },
+    },
+    mounted() {
+        this.$bus.$on("refresh", this.refreshUser);
+    },
+    beforeDestroy() {
+        this.$bus.$off("refresh");
     },
 };
 </script>

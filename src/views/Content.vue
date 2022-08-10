@@ -114,9 +114,6 @@ export default {
         //请求分页查询数据
         this.load();
     },
-    created() {
-        this.load();
-    },
     methods: {
         exp() {
             window.open("http://localhost:8080/api/user/export");
@@ -178,7 +175,7 @@ export default {
         },
         delBatch() {
             let ids = this.multipleSelection.map(v => v.id); // [{}, {}, {}] => [1,2,3]
-            this.request.post("/user/del/batch", ids).then(res => {
+            this.request.post("/user/batch", ids).then(res => {
                 if (res) {
                     this.$message.success("批量删除成功");
                     this.load();

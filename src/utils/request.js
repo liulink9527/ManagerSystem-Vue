@@ -1,4 +1,6 @@
 import axios from "axios";
+import ElementUI from "element-ui";
+import router from "../router";
 
 const request = axios.create({
     baseURL: "http://localhost:8080/api",
@@ -8,7 +10,10 @@ const request = axios.create({
 request.interceptors.request.use(
     config => {
         config.headers["Content-Type"] = "application/json;charset=utf-8";
-
+        let user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {};
+        if (user) {
+            config.headers["token"] = user.token;
+        }
         return config;
     },
     error => {
@@ -25,6 +30,9 @@ request.interceptors.response.use(
         }
         if (typeof res === "string") {
             res = res ? JSON.parse(res) : res;
+        }
+        if (res.code === "500") {
+            router.push("/login");
         }
         return res;
     },
