@@ -14,7 +14,29 @@
             <img src="../assets/logo.png" style="width: 20px; position: relative; top: 4px; margin-right: 3px" />
             <b style="color: white" v-show="isHidden">后台管理系统</b>
         </div>
-        <el-menu-item index="/home">
+        <div v-for="item in user.menus" :key="item.id">
+            <div v-if="item.path">
+                <el-menu-item :index="item.path">
+                    <i :class="item.icon"></i>
+                    <span slot="title">{{ item.name }}</span>
+                </el-menu-item>
+            </div>
+            <div v-else>
+                <el-submenu :index="item.id + ''">
+                    <template slot="title">
+                        <i :class="item.icon"></i>
+                        <span slot="title">{{ item.name }}</span>
+                    </template>
+                    <div v-for="subItem in item.children" :key="subItem.id">
+                        <el-menu-item :index="subItem.path">
+                            <i :class="subItem.icon"></i>
+                            <span slot="title">{{ subItem.name }}</span>
+                        </el-menu-item>
+                    </div>
+                </el-submenu>
+            </div>
+        </div>
+        <!-- <el-menu-item index="/home">
             <template slot="title">
                 <i class="el-icon-s-home"></i>
                 <span slot="title">主页</span>
@@ -43,7 +65,7 @@
                 <i class="el-icon-menu"></i>
                 菜单管理
             </el-menu-item>
-        </el-submenu>
+        </el-submenu> -->
     </el-menu>
 </template>
 
@@ -55,6 +77,13 @@ export default {
         isHidden: Boolean,
         sideWidth: Number,
     },
+    data() {
+        return {
+            user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {},
+        };
+    },
+
+    methods: {},
 };
 </script>
 
