@@ -32,10 +32,11 @@
             <el-table-column prop="id" label="ID" width="80px"></el-table-column>
             <el-table-column prop="name" label="角色名称"></el-table-column>
             <el-table-column prop="description" label="描述"></el-table-column>
+            <el-table-column prop="flag" label="唯一标识"></el-table-column>
 
             <el-table-column label="操作" width="300px" align="center">
                 <template slot-scope="scope">
-                    <el-button @click="selectMenu(scope.row)" type="info" slot="reference">
+                    <el-button @click="selectMenu(scope.row.id)" type="info" slot="reference">
                         分配菜单
                         <i class="el-icon-menu"></i>
                     </el-button>
@@ -80,6 +81,9 @@
                 <el-form-item label="描述">
                     <el-input v-model="form.description" autocomplete="off"></el-input>
                 </el-form-item>
+                <el-form-item label="唯一标识">
+                    <el-input v-model="form.flag" autocomplete="off"></el-input>
+                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -92,12 +96,13 @@
                 :props="props"
                 node-key="id"
                 :default-expanded-keys="expands"
-                :default-checked-keys="[6]"
+                :default-checked-keys="picked"
                 :data="menuData"
+                
                 show-checkbox
-                @check-change="handleCheckChange"
+                ref="tree"
             >
-                <span class="custom-tree-node" slot-scope="{ node, data }">
+                <span class="custom-tree-node" slot-scope="{ data }">
                     <span>
                         <i :class="data.icon"></i>
                         {{ data.name }}
@@ -106,7 +111,7 @@
             </el-tree>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="menuDialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="save">确 定</el-button>
+                <el-button type="primary" @click="saveRoleMenu()">确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -133,6 +138,8 @@ export default {
                 label: "name",
             },
             expands: [],
+            picked: [],
+            roleId: 0,
         };
     },
     created() {
@@ -154,6 +161,16 @@ export default {
                     this.total = res.data.total;
                 });
         },
+        saveRoleMenu() {
+            let menuIds = this.$refs.tree.getCheckedKeys();
+            console.log(menuIds);
+            this.request.post(`/role/roleMenu/${this.roleId}`, menuIds).then(res => {
+                if (res.code === "200") {
+                    this.$message.success("绑定成功");
+                    this.menuDialogFormVisible = false;
+                }
+            });
+        },
         save() {
             this.request.post("/role", this.form).then(res => {
                 if (res) {
@@ -172,6 +189,11 @@ export default {
                 this.menuData = res.data;
                 this.expands = this.menuData.map(v => v.id);
             });
+            this.request.get("/role/getRoleMenu/" + roleId).then(res => {
+                this.picked = res.data;
+            });
+
+            this.roleId = roleId;
         },
         handleAdd() {
             this.dialogFormVisible = true;
@@ -220,7 +242,6 @@ export default {
             this.pageNum = pageNum;
             this.load();
         },
-        handleCheckChange() {},
     },
 };
 </script>

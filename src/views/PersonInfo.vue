@@ -1,7 +1,12 @@
 <template>
     <el-card style="width: 500px">
         <el-form label-width="80px" size="small">
-            <el-upload class="avatar-uploader" action="http://localhost:8080/api/file/upload" :show-file-list="false" :on-success="handleAvatarSuccess">
+            <el-upload
+                class="avatar-uploader"
+                action="http://localhost:8080/api/file/upload"
+                :show-file-list="false"
+                :on-success="handleAvatarSuccess"
+            >
                 <img v-if="form.avatarUrl" :src="form.avatarUrl" class="avatar" />
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
@@ -21,6 +26,11 @@
             <el-form-item label="地址">
                 <el-input v-model="form.address" autocomplete="off"></el-input>
             </el-form-item>
+            <el-form-item label="角色">
+                <el-select v-model="form.role" placeholder="请选择角色" style="width: 100%">
+                    <el-option v-for="item in roles" :key="item.name" :label="item.name" :value="item.flag"></el-option>
+                </el-select>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="save">确 定</el-button>
                 <el-button @click="back">取 消</el-button>
@@ -36,12 +46,16 @@ export default {
         return {
             form: {},
             user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {},
+            roles: [],
         };
     },
     created() {
         this.getUser().then(res => {
             console.log(res);
             this.form = res;
+        });
+        this.request.get("/role").then(res => {
+            this.roles = res.data;
         });
     },
     methods: {
@@ -55,14 +69,14 @@ export default {
             this.request.post("/user", this.form).then(res => {
                 if (res) {
                     this.$message.success("保存成功");
- 
+
                     //更新浏览器存储的用户信息
                     this.getUser().then(res => {
                         res.token = JSON.parse(localStorage.getItem("user")).token;
                         localStorage.setItem("user", JSON.stringify(res));
                     });
 
-                    this.$bus.$emit("refresh",this.form);
+                    this.$bus.$emit("refresh", this.form);
 
                     this.$router.push("/home");
                 } else {

@@ -3,7 +3,13 @@
         <div style="margin: 10px 0">
             <el-input style="width: 200px" placeholder="请输入名称" suffix-icon="el-icon-search" v-model="username"></el-input>
             <el-input style="width: 200px" placeholder="请输入邮箱" suffix-icon="el-icon-message" class="ml-5" v-model="email"></el-input>
-            <el-input style="width: 200px" placeholder="请输入地址" suffix-icon="el-icon-position" class="ml-5" v-model="address"></el-input>
+            <el-input
+                style="width: 200px"
+                placeholder="请输入地址"
+                suffix-icon="el-icon-position"
+                class="ml-5"
+                v-model="address"
+            ></el-input>
             <el-button class="ml-5" type="primary" @click="load">搜索</el-button>
             <el-button type="warning" @click="reset">重置</el-button>
         </div>
@@ -13,14 +19,28 @@
                 新增
                 <i class="el-icon-circle-plus-outline"></i>
             </el-button>
-            <el-popconfirm class="ml-5" confirm-button-text="确定" cancel-button-text="我再想想" icon="el-icon-info" icon-color="red" title="您确定批量删除这些数据吗？" @confirm="delBatch">
+            <el-popconfirm
+                class="ml-5"
+                confirm-button-text="确定"
+                cancel-button-text="我再想想"
+                icon="el-icon-info"
+                icon-color="red"
+                title="您确定批量删除这些数据吗？"
+                @confirm="delBatch"
+            >
                 <el-button type="danger" slot="reference">
                     批量删除
                     <i class="el-icon-remove-outline"></i>
                 </el-button>
             </el-popconfirm>
 
-            <el-upload :on-success="impSuccess" accept="xlsx" :show-file-list="false" action="http://localhost:8080/api/user/import" style="display: inline-block">
+            <el-upload
+                :on-success="impSuccess"
+                accept="xlsx"
+                :show-file-list="false"
+                action="http://localhost:8080/api/user/import"
+                style="display: inline-block"
+            >
                 <el-button type="primary">
                     导入
                     <i class="el-icon-bottom"></i>
@@ -40,13 +60,22 @@
             <el-table-column prop="email" label="邮箱"></el-table-column>
             <el-table-column prop="phone" label="电话"></el-table-column>
             <el-table-column prop="address" label="地址"></el-table-column>
+            <el-table-column prop="role" label="角色"></el-table-column>
             <el-table-column label="操作" width="200" align="center">
                 <template slot-scope="scope">
                     <el-button type="success" @click="handleEdit(scope.row)">
                         编辑
                         <i class="el-icon-edit"></i>
                     </el-button>
-                    <el-popconfirm class="ml-5" confirm-button-text="确定" cancel-button-text="我再想想" icon="el-icon-info" icon-color="red" title="您确定删除吗？" @confirm="del(scope.row.id)">
+                    <el-popconfirm
+                        class="ml-5"
+                        confirm-button-text="确定"
+                        cancel-button-text="我再想想"
+                        icon="el-icon-info"
+                        icon-color="red"
+                        title="您确定删除吗？"
+                        @confirm="del(scope.row.id)"
+                    >
                         <el-button type="danger" slot="reference">
                             删除
                             <i class="el-icon-remove-outline"></i>
@@ -84,6 +113,11 @@
                 <el-form-item label="地址">
                     <el-input v-model="form.address" autocomplete="off"></el-input>
                 </el-form-item>
+                <el-form-item label="角色">
+                    <el-select clearable v-model="form.role" placeholder="请选择角色" style="width: 100%">
+                        <el-option v-for="item in roles" :key="item.id" :label="item.name" :value="item.flag"></el-option>
+                    </el-select>
+                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -108,6 +142,7 @@ export default {
             form: {},
             dialogFormVisible: false,
             multipleSelection: [],
+            roles: [],
         };
     },
     created() {
@@ -139,6 +174,10 @@ export default {
                     this.tableData = res.records;
                     this.total = res.total;
                 });
+
+            this.request.get("/role").then(res => {
+                this.roles = res.data;
+            });
         },
         save() {
             this.request.post("/user", this.form).then(res => {
